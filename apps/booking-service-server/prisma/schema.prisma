@@ -1,0 +1,78 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Categories {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Bookings {
+  createdAt    DateTime  @default(now())
+  date         DateTime?
+  id           String    @id @default(cuid())
+  service      Services? @relation(fields: [serviceId], references: [id])
+  serviceId    String?
+  specialistId String?
+  status       String?
+  time         DateTime?
+  updatedAt    DateTime  @updatedAt
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+model Services {
+  bookingsItems Bookings[]
+  categoryId    String?
+  createdAt     DateTime   @default(now())
+  description   String?
+  id            String     @id @default(cuid())
+  name          String?
+  price         Float?
+  updatedAt     DateTime   @updatedAt
+}
+
+model Messages {
+  content    String?
+  createdAt  DateTime  @default(now())
+  id         String    @id @default(cuid())
+  receiverId String?
+  senderId   String?
+  timestamp  DateTime?
+  updatedAt  DateTime  @updatedAt
+}
+
+model Notifications {
+  content   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  status    String?
+  typeField String?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model User {
+  bookingsItems      Bookings[]
+  createdAt          DateTime        @default(now())
+  email              String?         @unique
+  firstName          String?
+  id                 String          @id @default(cuid())
+  lastName           String?
+  name               String?
+  notificationsItems Notifications[]
+  password           String
+  phone              String?
+  roles              Json
+  updatedAt          DateTime        @updatedAt
+  username           String          @unique
+}
